@@ -20,3 +20,7 @@ Route::get('/calendar', function () {
 });
 
 Route::get('/calendar', 'CalendarController@calendar');
+
+Route::get('/calendar/schedule', 'CalendarController@schedule');
+
+Route::post('/calendar/schedule/add', 'CalendarController@scheduleAdd');

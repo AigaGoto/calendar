@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\Event;
 
 class CalendarController extends Controller
 {
@@ -53,6 +54,45 @@ class CalendarController extends Controller
             }
         }
 
-        return view('calendar', compact('calendarWeek'));
+        // イベントを取得
+        $events = Event::get();
+        // dd($events[0]->name);
+
+        $calendarEvents = [];
+
+        for ($i = 0; $i < count($events); $i++) {
+            $event = [$events[$i]->name, $events[$i]->date];
+            array_push($calendarEvents, $event);
+        }
+
+        return view('calendar', compact('calendarWeek', 'calendarEvents'));
+    }
+
+    public function schedule () {
+        return view('calendar.schedule');
+    }
+
+    public function scheduleAdd (Request $request) {
+        
+        //バリデーション　イベント名・日付どちらも必須
+        // https://readouble.com/laravel/6.x/ja/validation.html
+        // バリデーションはOKです！
+        $validatedData = $request->validate([
+            'name' => 'required|max:100',
+            'date' => 'required',
+        ]);
+        
+        // dd($validatedData);
+        // dd($validatedData["name"], $validatedData["date"]);
+
+        //データベースの登録 Event::createを使ってみてください。
+        // $validatedData['name'];
+        Event::create([
+            'name' => $validatedData["name"],
+            'date' => $validatedData["date"],
+        ]);
+
+        //calendarにリダイレクト
+        return redirect('calendar');
     }
 }
